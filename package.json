@@ -1,0 +1,34 @@
+{
+  "name": "speedcontrol-omnibar-schedule",
+  "version": "1.0.0",
+  "license": "MIT",
+  "source": "src/omnibar-item.js",
+  "context": "browser",
+  "outputFormat": "commonjs",
+  "distDir": "dist",
+  "scripts": {
+    "watch": "npx parcel watch",
+    "build": "npx parcel build"
+  },
+  "nodecg": {
+    "compatibleRange": "^1.5.0",
+    "mount": [
+      {
+        "directory": "dist",
+        "endpoint": "dist"
+      },
+      {
+        "directory": "css",
+        "endpoint": "css"
+      }
+    ]
+  },
+  "dependencies": {
+    "date-fns": "^2.29.3",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
+  }
+}

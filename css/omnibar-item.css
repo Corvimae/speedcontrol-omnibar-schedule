@@ -1,0 +1,58 @@
+.schedule-item-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-family: 'Futura Md BT';
+}
+
+.schedule-item-time {
+  position: relative;
+  display: flex;
+  height: max-content;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25rem 1.4rem 0.25rem 0.25rem;
+  margin: 0 1rem 0 2rem;
+  z-index: 1;
+  /* background-color: #8A58C1; */
+}
+
+.schedule-item-time:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: #8A58C1;
+  transform-origin: 100% 0;
+  transform: skew(-20deg);
+  z-index: -2;
+}
+
+.schedule-item-data {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+  min-width: 0;
+  flex-grow: 1;
+  align-self: stretch;
+  padding: 0.5rem;
+}
+
+.schedule-item-runner {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+
+.schedule-item-title {
+  font-weight: 700;
+}
+
+.message-container-2 {
+  color: #f00;
+}
