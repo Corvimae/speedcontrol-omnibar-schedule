@@ -54,6 +54,8 @@ module.exports = async nodecg => {
 
     // Enqueue the upcoming schedule items
     const nextRunIndex = getNextRunIndex();
+
+    if (nextRunIndex === -1) return;
   
     const [upcomingRuns] = [...new Array(upcomingItemCount)].reduce(([list, estimatedStart], _, index) => {
       const run = runDataArray.value[nextRunIndex + index];
@@ -61,7 +63,7 @@ module.exports = async nodecg => {
       if (run) {
         return [
           [...list, createRunItemConfig(run, estimatedStart, index)],
-          add(estimatedStart, { seconds: run.estimateS }),
+          add(estimatedStart, { seconds: run.estimateS + run.setupTimeS }),
         ];
       }
 
