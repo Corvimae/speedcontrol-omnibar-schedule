@@ -38,7 +38,7 @@ window.omnibar.register('schedule-item', ({ data, isLocked, isActive, isTransiti
           {data.runners.join(', ')} run{data.runners.length === 1 ? 's' : ''}
         </div>
         <div className="schedule-item-title">
-          {data.game}
+          {data.game} &mdash; {data.category}
         </div>
       </div>
     </div>

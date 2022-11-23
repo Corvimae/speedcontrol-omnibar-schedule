@@ -38,6 +38,7 @@ module.exports = async nodecg => {
     return {
       runId: run.id,
       game: run.game,
+      category: run.category,
       runners,
       isNext: index === 0,
       estimatedStart,
@@ -71,7 +72,7 @@ module.exports = async nodecg => {
     }, [[], new Date()]);
 
     upcomingRuns.forEach(upcomingRun => {
-      omnibar.enqueueCarouselItem('schedule-item', upcomingRun, { autoGroup: true });
+      omnibar.enqueueCarouselItem('schedule-item', upcomingRun, { autoGroup: true, duration: 10000 });
     });    
   }
 
