@@ -25,21 +25,24 @@ function getRelativeTime(d1, d2 = new Date()) {
 
 window.omnibar.register('schedule-item', ({ data, isLocked, isActive, isTransitioning, isOverlay }) => {
   const relativeTime = window.omnibar.useMemo(() => {
-    if (data.isNext) return 'Up next';
+    if (data.isNext) return 'Now arriving';
 
-    return getRelativeTime(new Date(data.estimatedStart));
+    return `Arriving ${getRelativeTime(new Date(data.estimatedStart))}`;
   }, [data.isNext, data.estimatedStart]);
+
+  const isNameTooLong = data.game.length > 24;
 
   return (
     <div className="schedule-item-container">
       <div className="schedule-item-time">{relativeTime}</div>
       <div className="schedule-item-data">
+        <div className={`schedule-item-title ${isNameTooLong ? 'schedule-item-title__long' : ''}`}>
+          {data.game}
+        </div>
         <div className="schedule-item-runner">
-          {data.runners.join(', ')} run{data.runners.length === 1 ? 's' : ''}
+          {data.category} by {data.runners.join(', ')}
         </div>
-        <div className="schedule-item-title">
-          {data.game} &mdash; {data.category}
-        </div>
+
       </div>
     </div>
   );

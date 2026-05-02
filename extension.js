@@ -2,7 +2,10 @@ const { OmnibarInterface } = require('nodecg-omnibar');
 const { upcomingItemCount } = require('./config.json');
 const { add } = require('date-fns');
 
+const ITEM_DURATION = 10000;
+
 module.exports = async nodecg => {
+  const isCurrentlyUpdating = { value: false };
   const omnibar = new OmnibarInterface(nodecg);
 
   omnibar.registerItemType('speedcontrol-omnibar-schedule', 'schedule-item', 'Schedule - {{game}}', {
@@ -27,7 +30,7 @@ module.exports = async nodecg => {
     const runnerTeams = run.teams.filter(team => {
       const name = team.name?.toLowerCase() ?? '';
         
-      return name.indexOf('host') === -1 && name.indexOf('commentary') === -1;
+      return name.indexOf('host') === -1 && name.indexOf('commentary') === -1 && name.indexOf('commentators') === -1;
     });
 
     const runners = runnerTeams.reduce((acc, team) => [
@@ -37,15 +40,30 @@ module.exports = async nodecg => {
 
     return {
       runId: run.id,
+      trackerId: run.externalID,
       game: run.game,
       category: run.category,
       runners,
       isNext: index === 0,
-      estimatedStart,
+      estimatedStart: estimatedStart.toISOString(),
     };
   }
 
-  function updateUpcomingRuns() {
+  async function updateUpcomingRuns() {
+    if (isCurrentlyUpdating.value) {
+      await new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+          if (!isCurrentlyUpdating.value) {
+            clearInterval(intervalId);
+            
+            resolve();
+          }
+        }, 0);
+      });
+    }
+
+    isCurrentlyUpdating.value = true;
+
     const enqueuedScheduleItems = omnibarState.value.carouselQueue.filter(item => item.type === 'schedule-item');
 
     // Remove the existing schedule items.
@@ -58,7 +76,9 @@ module.exports = async nodecg => {
 
     if (nextRunIndex === -1) return;
   
-    const [upcomingRuns] = [...new Array(upcomingItemCount)].reduce(([list, estimatedStart], _, index) => {
+    const actualItemCount = Math.min(runDataArray.value.length, upcomingItemCount);
+
+    const [upcomingRuns] = [...new Array(actualItemCount)].reduce(([list, estimatedStart], _, index) => {
       const run = runDataArray.value[nextRunIndex + index];
 
       if (run) {
@@ -71,9 +91,11 @@ module.exports = async nodecg => {
       return [list, estimatedStart];
     }, [[], new Date()]);
 
-    upcomingRuns.forEach(upcomingRun => {
-      omnibar.enqueueCarouselItem('schedule-item', upcomingRun, { autoGroup: true, duration: 10000 });
-    });    
+    for (const upcomingRun of upcomingRuns) {
+      await omnibar.enqueueCarouselItem('schedule-item', upcomingRun, { autoGroup: true, duration: ITEM_DURATION });
+    }
+
+    isCurrentlyUpdating.value = false;
   }
 
   runDataActiveRunSurrounding.on('change', updateUpcomingRuns);
