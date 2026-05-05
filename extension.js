@@ -14,11 +14,12 @@ module.exports = async nodecg => {
 
   const omnibarState = nodecg.Replicant('nodecg-omnibar', 'nodecg-omnibar', { persistent: false });
   const runDataArray = nodecg.Replicant('runDataArray', 'nodecg-speedcontrol');
-	const runDataActiveRunSurrounding = nodecg.Replicant('runDataActiveRunSurrounding', 'nodecg-speedcontrol');
+	const runDataActiveRun = nodecg.Replicant('runDataActiveRun', 'nodecg-speedcontrol');
 
-  function getNextRunIndex() {
-    const pendingRunId = runDataActiveRunSurrounding.value.next;
+  function getCurrentRunIndex() {
+    const pendingRunId = runDataActiveRun.value.id;
     
+    console.log(runDataActiveRun.value);
     for (const [index, run] of runDataArray.value.entries()) {
       if (run.id === pendingRunId) return index;
     }
@@ -72,14 +73,16 @@ module.exports = async nodecg => {
     });
 
     // Enqueue the upcoming schedule items
-    const nextRunIndex = getNextRunIndex();
+    const currentRunIndex = getCurrentRunIndex();
 
-    if (nextRunIndex === -1) return;
-  
+    console.log('requeue');
+    
+    if (currentRunIndex === -1) return;
+
     const actualItemCount = Math.min(runDataArray.value.length, upcomingItemCount);
-
+  
     const [upcomingRuns] = [...new Array(actualItemCount)].reduce(([list, estimatedStart], _, index) => {
-      const run = runDataArray.value[nextRunIndex + index];
+      const run = runDataArray.value[currentRunIndex + index];
 
       if (run) {
         return [
@@ -91,6 +94,7 @@ module.exports = async nodecg => {
       return [list, estimatedStart];
     }, [[], new Date()]);
 
+    console.log(currentRunIndex, upcomingRuns)
     for (const upcomingRun of upcomingRuns) {
       await omnibar.enqueueCarouselItem('schedule-item', upcomingRun, { autoGroup: true, duration: ITEM_DURATION });
     }
@@ -98,5 +102,14 @@ module.exports = async nodecg => {
     isCurrentlyUpdating.value = false;
   }
 
-  runDataActiveRunSurrounding.on('change', updateUpcomingRuns);
+  function requestUpcomingRunUpdate() {
+    // Race condition on nodecg-speedcontrol
+    setTimeout(updateUpcomingRuns, 100);
+  }
+
+  nodecg.listenFor('returnToStart', 'nodecg-speedcontrol', requestUpcomingRunUpdate);
+  nodecg.listenFor('changeToNextRun', 'nodecg-speedcontrol', requestUpcomingRunUpdate);
+  nodecg.listenFor('changeActiveRun', 'nodecg-speedcontrol', requestUpcomingRunUpdate);
+
+  updateUpcomingRuns();
 };
