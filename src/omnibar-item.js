@@ -40,7 +40,7 @@ window.omnibar.register('schedule-item', ({ data, isLocked, isActive, isTransiti
           {data.game}
         </div>
         <div className="schedule-item-runner">
-          {data.category} by {data.runners.join(', ')}
+          {data.category} — via {data.runners.join(', ')}
         </div>
 
       </div>

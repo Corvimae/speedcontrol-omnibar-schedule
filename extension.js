@@ -19,7 +19,6 @@ module.exports = async nodecg => {
   function getCurrentRunIndex() {
     const pendingRunId = runDataActiveRun.value.id;
     
-    console.log(runDataActiveRun.value);
     for (const [index, run] of runDataArray.value.entries()) {
       if (run.id === pendingRunId) return index;
     }
@@ -75,7 +74,6 @@ module.exports = async nodecg => {
     // Enqueue the upcoming schedule items
     const currentRunIndex = getCurrentRunIndex();
 
-    console.log('requeue');
     
     if (currentRunIndex === -1) return;
 
@@ -94,7 +92,6 @@ module.exports = async nodecg => {
       return [list, estimatedStart];
     }, [[], new Date()]);
 
-    console.log(currentRunIndex, upcomingRuns)
     for (const upcomingRun of upcomingRuns) {
       await omnibar.enqueueCarouselItem('schedule-item', upcomingRun, { autoGroup: true, duration: ITEM_DURATION });
     }
