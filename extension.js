@@ -17,6 +17,8 @@ module.exports = async nodecg => {
 	const runDataActiveRun = nodecg.Replicant('runDataActiveRun', 'nodecg-speedcontrol');
 
   function getCurrentRunIndex() {
+    if (!runDataActiveRun.value) return -1;
+
     const pendingRunId = runDataActiveRun.value.id;
     
     for (const [index, run] of runDataArray.value.entries()) {
