@@ -30,7 +30,7 @@ window.omnibar.register('schedule-item', ({ data, isLocked, isActive, isTransiti
     return `Arriving ${getRelativeTime(new Date(data.estimatedStart))}`;
   }, [data.isNext, data.estimatedStart]);
 
-  const isNameTooLong = data.game.length > 24;
+  const isNameTooLong = data.game.length > 20;
 
   return (
     <div className="schedule-item-container">
