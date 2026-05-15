@@ -42,8 +42,8 @@ window.omnibar.register('schedule-item', ({ data, isLocked, isActive, isTransiti
         <div className="schedule-item-runner">
           {data.category} — via {data.runners.join(', ')}
         </div>
-
       </div>
     </div>
   );
 });
+ 
