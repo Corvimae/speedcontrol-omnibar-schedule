@@ -15,6 +15,10 @@ const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
 function getRelativeTime(d1, d2 = new Date()) {
   const elapsed = d1 - d2;
 
+  if (elapsed < 0) {
+    return 'soon';
+  }
+
   // "Math.abs" accounts for both "past" & "future" scenarios
   for (const u in units) {
     if (Math.abs(elapsed) > units[u] || u === 'second')  {
